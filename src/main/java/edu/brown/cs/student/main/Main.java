@@ -1,11 +1,13 @@
 package edu.brown.cs.student.main;
 
 import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.LinkedList;
 import java.util.Map;
 
 import com.google.common.collect.ImmutableMap;
@@ -66,10 +68,39 @@ public final class Main {
       while ((input = br.readLine()) != null) {
         try {
           input = input.trim();
-          String[] arguments = input.split(" ");
-          System.out.println(arguments[0]);
+          String[] arguments = input.split(" "); //splits input string by space and creates array
+          //System.out.println(arguments[0]);
           // TODO: complete your REPL by adding commands for addition "add" and subtraction
           //  "subtract"
+          LinkedList<String[]> allStars = new LinkedList<String[]>(); //right placement for this?
+          if (arguments[0].equals("add") || arguments[0].equals("subtract")) {
+            MathBot mathBot = new MathBot();
+            double num1 = Double.parseDouble(arguments[1]);
+            double num2 = Double.parseDouble(arguments[2]);
+            if (arguments[0].equals("add")) {
+              System.out.println(mathBot.add(num1, num2));
+            } else if (arguments[0].equals("subtract")) {
+              System.out.println(mathBot.subtract(num1, num2));
+            }
+          }
+          //placement of this? seems awkward because disconnected from MathBot stuff above
+          else if (arguments[0].equals("stars")) { //stores star data in Linked List of arrays
+            BufferedReader reader = new BufferedReader(new FileReader(arguments[1]));
+            reader.readLine(); //goes past first line, which just lists column names
+            while (reader.readLine() != null) { //add star info to list
+              String[] toAdd = reader.readLine().split(",");
+              allStars.add(toAdd);
+            }
+            reader.close();
+          } /* else if (arguments[0].equals("naive_neighbors")) {
+            if (arguments.length == 4) { //first naive_neighbors implementation
+              sqrt((z2 - z1) * (z2 - z1) + (y2 - y1) * (y2 - y1) + (x2 - x1) * (x2 - x1))
+            } else if (arguments.length == 3) { //second naive_neighbors implementation
+              int[] inputStarCoords = new int[];
+              arguments[0]
+            }
+          }
+          */
         } catch (Exception e) {
           // e.printStackTrace();
           System.out.println("ERROR: We couldn't process your input");
@@ -79,7 +110,6 @@ public final class Main {
       e.printStackTrace();
       System.out.println("ERROR: Invalid input for REPL");
     }
-
   }
 
   private static FreeMarkerEngine createEngine() {
