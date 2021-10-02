@@ -7,7 +7,9 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 import com.google.common.collect.ImmutableMap;
@@ -69,10 +71,10 @@ public final class Main {
         try {
           input = input.trim();
           String[] arguments = input.split(" "); //splits input string by space and creates array
+          LinkedList<Star> allStars = new LinkedList<Star>();
           //System.out.println(arguments[0]);
           // TODO: complete your REPL by adding commands for addition "add" and subtraction
           //  "subtract"
-          LinkedList<String[]> allStars = new LinkedList<String[]>(); //right placement for this?
           if (arguments[0].equals("add") || arguments[0].equals("subtract")) {
             MathBot mathBot = new MathBot();
             double num1 = Double.parseDouble(arguments[1]);
@@ -83,24 +85,52 @@ public final class Main {
               System.out.println(mathBot.subtract(num1, num2));
             }
           }
-          //placement of this? seems awkward because disconnected from MathBot stuff above
           else if (arguments[0].equals("stars")) { //stores star data in Linked List of arrays
+            allStars.clear();
             BufferedReader reader = new BufferedReader(new FileReader(arguments[1]));
             reader.readLine(); //goes past first line, which just lists column names
-            while (reader.readLine() != null) { //add star info to list
-              String[] toAdd = reader.readLine().split(",");
-              allStars.add(toAdd);
+            String info = reader.readLine();
+            while (info != null) { //add star info to list
+              String[] splitInfo = info.trim().split(",");
+              Star newStar = new Star(Integer.parseInt(splitInfo[0]), splitInfo[1],
+                  Float.parseFloat(splitInfo[2]), Float.parseFloat(splitInfo[3]),
+                  Float.parseFloat(splitInfo[4]);
+              allStars.add(newStar);
+              info = reader.readLine();
             }
             reader.close();
-          } /* else if (arguments[0].equals("naive_neighbors")) {
-            if (arguments.length == 4) { //first naive_neighbors implementation
-              sqrt((z2 - z1) * (z2 - z1) + (y2 - y1) * (y2 - y1) + (x2 - x1) * (x2 - x1))
-            } else if (arguments.length == 3) { //second naive_neighbors implementation
-              int[] inputStarCoords = new int[];
-              arguments[0]
-            }
+          } else if (arguments[0].equals("naive_neighbors")) {
+              if (arguments.length == 5) { //first naive_neighbors implementation
+                HashMap<Star,Double> distances = new HashMap<Star,Double>;
+                //calculate distances of all stars and add to hashmap allStars
+                for (Star star : allStars) {
+                  distances.put(star, Math.sqrt((star.X - Float.parseFloat(arguments[2])) *
+                      (star.Y - Float.parseFloat(arguments[3])) *
+                      (star.Z - Float.parseFloat(arguments[4]))));
+                }
+                HashMap<Star, Double> outputStars = new HashMap<Star,Double>();
+                //find top k distances and add to hashmap outputStars
+                for (Map.Entry<Star,Double> entryAll : distances.entrySet()){
+                  if (outputStars.size() == Integer.parseInt(arguments[1])) { //already has k entries
+                    for (Map.Entry<Star, Double> entryOutput : outputStars.entrySet()) {
+                      if (entryOutput.getValue() > entryAll.getValue()) {
+                        outputStars.remove(entryOutput.getKey());
+                        outputStars.put(entryAll.getKey(), entryAll.getValue());
+                      }
+                    }
+                  }
+                  else {
+                    outputStars.put(entryAll.getKey(), entryAll.getValue());
+                  }
+                }
+            } else if (arguments.length == 4) { //second naive_neighbors implementation
+                int[] inputStarCoords = new int[];
+                arguments[0]
+              } else { //number of parameters is incorrect
+                System.out.println("ERROR: We couldn't process your input");
+                throw new Exception();
+              }
           }
-          */
         } catch (Exception e) {
           // e.printStackTrace();
           System.out.println("ERROR: We couldn't process your input");
